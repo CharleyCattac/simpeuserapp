@@ -1,13 +1,14 @@
 package com.itransition.lobach.simpleuserapp.domain;
 
-import lombok.Data;
-import org.springframework.security.core.GrantedAuthority;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "roles")
 public class Role {
@@ -23,6 +24,6 @@ public class Role {
         this.role = role;
     }
 
-    @ManyToMany(mappedBy = "authorities")
+    @ManyToMany(mappedBy = "authorities", cascade = CascadeType.ALL)
     private Set<User> users = new HashSet<>();
 }

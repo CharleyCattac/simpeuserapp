@@ -1,9 +1,8 @@
 package com.itransition.lobach.simpleuserapp.service;
 
-import com.itransition.lobach.simpleuserapp.composers.builder.UserBuilder;
+import com.itransition.lobach.simpleuserapp.builder.UserBuilder;
 import com.itransition.lobach.simpleuserapp.domain.Role;
 import com.itransition.lobach.simpleuserapp.domain.User;
-import com.itransition.lobach.simpleuserapp.repository.RoleRepository;
 import com.itransition.lobach.simpleuserapp.repository.UserRepository;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +35,10 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(@NonNull String s) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(s);
         if (user != null) {
-            Set<Role> roles = new HashSet<>();
-            roles.add(roleService.getRoleById(user.getId()));
-
             return new org.springframework.security.core.userdetails.User(
                     user.getUsername(),
                     user.getPassword(),
-                    getAuthority(roles));
+                    getAuthorities(user));
         } else {
             throw new UsernameNotFoundException("user " + s +" not found");
         }
@@ -58,14 +54,35 @@ public class UserService implements UserDetailsService {
     }
 
     public User saveUser(String name, String username, String password) {
-        User user = UserBuilder.buildUser(name, username, passwordEncoder.encode(password), System.currentTimeMillis());
-        return userRepository.save(user);
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            Set<Role> roles = new HashSet<>();
+            roles.add(roleService.getUserRole());
+
+            User newUser = UserBuilder.buildUser(
+                    name,
+                    username,
+                    passwordEncoder.encode(password),
+                    roles,
+                    System.currentTimeMillis());
+
+            return userRepository.save(newUser);
+        }
+        return null;
     }
 
     public void blockUser(String username) {
         User user = userRepository.findByUsername(username);
         if (user != null) {
             user.setBlocked(true);
+            userRepository.save(user);
+        }
+    }
+
+    public void updateLastCheckoutTime(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            user.setMillisWhenLastLogin(System.currentTimeMillis());
             userRepository.save(user);
         }
     }
@@ -89,7 +106,9 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    public Set<GrantedAuthority> getAuthority(Set<Role> roleSet) {
-        return roleSet.stream().map(role -> new SimpleGrantedAuthority(role.getRole())).collect(Collectors.toSet());
+    private Set<GrantedAuthority> getAuthorities(User user) {
+        return user.getAuthorities().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getRole()))
+                .collect(Collectors.toSet());
     }
 }

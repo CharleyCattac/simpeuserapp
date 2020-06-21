@@ -20,12 +20,10 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="/table_anon">Readonly table</a>
+                    <a class="nav-link" href="/table_readonly">Readonly table</a>
                 </li>
-            </ul>
-            <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="/table_signed">Editable table</a>
+                    <a class="nav-link" href="/table_edit">Editable table</a>
                 </li>
             </ul>
         </div>
@@ -33,11 +31,12 @@
 
     <div class="d-flex justify-content-center">
         <div class="card" style="width: 600px; padding: 20px">
-            <div th:text="${#httpServletRequest.getParameter('error')}"
-                 th:unless="${#httpServletRequest.getParameter('error') == null}">
-                Show some error msg
-            </div>
-            <div id="message"></div>
+            <p style="color: red">
+                <td th:text="${error}" style="color: red">err</td>
+            </p>
+            <p style="color: green">
+                <td th:text="${message}" style="color: green">msg</td>
+            </p>
 
             <form action="/signin" method="post">
                 <div class="form-group">
@@ -60,19 +59,6 @@
 
 </body>
 
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    var myval = /*[[${message}]]*/ "Test";
-    /*]]>*/
-    if (myval !== "Test") {
-        var messageText = document.createTextNode(myval)
-        var p = document.createElement("P");
-        p.appendChild(messageText);
-        p.style.color = "red";
-        var message = document.getElementById("message");
-        message.appendChild(p);
-    }
-</script>
 <!-- For bootstrap -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

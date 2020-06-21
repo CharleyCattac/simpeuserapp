@@ -20,12 +20,10 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="/table_anon">Readonly table</a>
+                    <a class="nav-link" href="/table_readonly">Readonly table</a>
                 </li>
-            </ul>
-            <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="/table_signed">Editable table</a>
+                    <a class="nav-link" href="/table_edit">Editable table</a>
                 </li>
             </ul>
         </div>
@@ -33,8 +31,12 @@
 
     <div class="d-flex justify-content-center">
         <div class="card" style="width: 600px; align-self: center; padding: 20px">
-            <td th:text="${message}">msg</td>
-            <div id="message"></div>
+            <p style="color: red">
+                <td th:text="${error}" style="color: red">err</td>
+            </p>
+            <p style="color: green">
+                <td th:text="${message}" style="color: green">msg</td>
+            </p>
 
             <form action="/signup" method="POST">
                 <div class="form-group">

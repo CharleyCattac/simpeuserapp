@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>User table</title>
+
+    <!-- For bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -17,20 +21,17 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="/table_anon">Readonly table</a>
+                    <a class="nav-link" href="/table_readonly">Readonly table</a>
                 </li>
-            </ul>
-            <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="/table_signed">Editable table</a>
+                    <a class="nav-link" href="/table_edit">Editable table</a>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <form action="/logout" method="get">
-        <input type="submit" value="Sign Out"/>
-    </form>
+    <td th:text="${message}" style="color: green">msg</td>
+    <td th:text="${error}" style="color: red">err</td>
 
     <div class="container" style="margin-top: 30px" ng-controller="AppCtrl">
         <div class="row">
@@ -41,7 +42,6 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>Check</th>
                                 <th>Id</th>
                                 <th>Name</th>
                                 <th>Username</th>
@@ -52,13 +52,12 @@
                             </thead>
                             <tbody>
                             <tr th:each="user : ${userList}">
-                                <td >check</td>
                                 <td th:text="${user.getId()}">1234</td>
                                 <td th:text="${user.getName()}">Mike</td>
                                 <td th:text="${user.getUsername()}">mikkelse</td>
-                                <td th:text="${#dates.format(new java.util.Date(user.getMillisWhenCreated()), "MM/DD/YYYY HH:MM:SS")}">123</td>
-                                <td th:text="${#dates.format(new java.util.Date(user.getMillisWhenLastLogin())), "MM/DD/YYYY HH:MM:SS")}">123</td>
-                                <td th:text="${user.isBlocked()}? #{blocked} : #{active}">unknown</td>
+                                <td th:text="${#dates.format(new java.util.Date(user.getMillisWhenLastLogin()), 'dd.MM.YYYY HH:mm:ss')}">123</td>
+                                <td th:text="${#dates.format(new java.util.Date(user.getMillisWhenLastLogin()), 'dd.MM.YYYY HH:mm:ss')}">123</td>
+                                <td th:text="${user.isBlocked()}? #{'blocked'} : #{'active'}">unknown</td>
                             </tr>
                             </tbody>
                         </table>
@@ -68,8 +67,8 @@
         </div>
     </div>
 
-
 </body>
+
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>

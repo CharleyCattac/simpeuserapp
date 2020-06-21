@@ -1,9 +1,6 @@
 package com.itransition.lobach.simpleuserapp.controller;
 
-import com.itransition.lobach.simpleuserapp.repository.UserRepository;
 import com.itransition.lobach.simpleuserapp.service.UserService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,17 +18,17 @@ public class MainController {
         return URL_INDEX;
     }
 
-    @GetMapping("/table_signed")
+    @GetMapping("/table_edit")
     public String showTable(Model model) {
         model.addAttribute(ATTRIBUTE_LIST, userService.findAll());
-        return URL_TABLE;
+        return URL_TABLE_EDIT;
     }
 
-    @GetMapping("/table_anon")
+    @GetMapping("/table_readonly")
     public String showAllowedTable(Model model) {
-        model.addAttribute(ATTRIBUTE_MESSAGE, ATTRIBUTE_MSG_ANONYM);
+        model.addAttribute(ATTRIBUTE_MESSAGE, ATTRIBUTE_MSG_ANON);
         model.addAttribute(ATTRIBUTE_LIST, userService.findAll());
-        return URL_TABLE;
+        return URL_TABLE_READONLY;
     }
 
     @GetMapping("/logout")

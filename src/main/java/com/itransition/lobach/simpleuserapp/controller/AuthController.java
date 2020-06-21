@@ -1,17 +1,12 @@
 package com.itransition.lobach.simpleuserapp.controller;
 
-import com.itransition.lobach.simpleuserapp.composers.builder.UserBuilder;
 import com.itransition.lobach.simpleuserapp.domain.User;
-import com.itransition.lobach.simpleuserapp.repository.UserRepository;
 import com.itransition.lobach.simpleuserapp.service.UserService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,11 +38,16 @@ public class AuthController {
         Optional<User> userFromDb = userService.findUserByUsername(username);
 
         if (userFromDb.isPresent()) {
-            model.addAttribute(ATTRIBUTE_ERROR, ATTRIBUTE_ERROR_SIGN_UP_USER_EXISTS);
+            model.addAttribute(ATTRIBUTE_ERROR, ATTRIBUTE_ERR_SIGN_UP_USER_EXISTS);
             return URL_SIGNUP;
         }
 
-        userService.saveUser(name, username, password);
+        try {
+            userService.saveUser(name, username, password);
+        } catch (RuntimeException e) {
+            model.addAttribute(ATTRIBUTE_ERROR, ATTRIBUTE_ERR_SIGN_UP);
+            return URL_SIGNUP;
+        }
         model.addAttribute(ATTRIBUTE_MESSAGE, ATTRIBUTE_MSG_SIGNUP_SUCCESSFUL);
 
         return URL_LOGIN_REDIRECT;
@@ -59,19 +59,25 @@ public class AuthController {
                         Model model) {
         Optional<User> user = userService.findUserByUsername(username);
         if (user.isEmpty()) {
-            model.addAttribute(ATTRIBUTE_MESSAGE, username);
+            model.addAttribute(ATTRIBUTE_ERROR, ATTRIBUTE_ERR_LOGIN_INVALID_DATA);
             return URL_LOGIN;
         }
 
         UserDetails userDetails = userService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password);
         authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(token);
+
+        userService.updateLastCheckoutTime(username);
 
         if(token.isAuthenticated()) {
-            SecurityContextHolder.getContext().setAuthentication(token);
+            model.addAttribute(ATTRIBUTE_MESSAGE, ATTRIBUTE_MSG_LOGIN_SUCCESSFUL);
+            return URL_INDEX;
+        } else {
+            model.addAttribute(ATTRIBUTE_ERROR, ATTRIBUTE_ERR_LOGIN);
+            model.addAttribute(ATTRIBUTE_MESSAGE, "Well yes, but actually no.");
+            return URL_LOGIN;
         }
-
-        return URL_TABLE;
     }
 
 }

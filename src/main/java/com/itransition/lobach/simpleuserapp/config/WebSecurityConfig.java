@@ -19,8 +19,6 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-/*    @Autowired
-    private DataSource dataSource;*/
 
     @Autowired
     private UserService userService;
@@ -29,7 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                     .authorizeRequests()
-                    .antMatchers("/", "/signup", "/signin", "/table_anon").permitAll()
+                    .antMatchers("/", "/signup", "/signin", "/table_readonly").permitAll()
                     .anyRequest().authenticated()
                 .and()
                     .formLogin()
@@ -57,4 +55,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
+    /*@Override
+    protected void registerAuthentication(AuthenticationManagerBuilder authManagerBuilder) throws Exception {
+        authManagerBuilder
+                .inMemoryAuthentication()
+                .withUser("user").password("password").roles("ADMIN");
+    }*/
 }
